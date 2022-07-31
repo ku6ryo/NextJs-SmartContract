@@ -1,10 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { v4 as uuid } from "uuid"
 import { Wallet } from "ethers"
-import { arrayify, id, isAddress, solidityKeccak256 } from 'ethers/lib/utils'
+import { arrayify, id, isAddress, solidityKeccak256, } from 'ethers/lib/utils'
+import BN from "bn.js"
 
 type ResponseData = {
   tokenId: string,
+  decimalTokenId: string,
   signature: string
 }
 
@@ -29,7 +31,8 @@ export default async function handler(
   }
 
   const tokenId = id(uuid())
-  const validator = new Wallet(SIGNER_PRIVATE_KEY)
-  const signature = await validator.signMessage(arrayify(solidityKeccak256(["uint256", "address"], [tokenId, address])))
-  res.status(200).json({ tokenId, signature })
+  const decimalTokenId = new BN(tokenId.replace(/^0x/, ""), 16).toString()
+  const signer = new Wallet(SIGNER_PRIVATE_KEY)
+  const signature = await signer.signMessage(arrayify(solidityKeccak256(["uint256", "address"], [tokenId, address])))
+  res.status(200).json({ tokenId, signature, decimalTokenId })
 }

@@ -19,11 +19,35 @@ contract SecureMintingNFT is ERC721, Ownable, Pausable {
    * Signer who can issue valid signatures.
    */
   address public mintSigner;
+  /**
+   * Base token URI
+   */
+  string public baseTokenURI;
+
+  event SetBaseTokenURI(string baseTokenURI);
 
   constructor() ERC721("Secure Minting NFT", "SMNFT") {}
 
   function setMintSigner(address _signer) external onlyOwner {
     mintSigner = _signer;
+  }
+
+  /**
+   * @notice Set baseTokenURI for this contract
+   * @param _baseTokenURI URI to be set
+   */
+  function setBaseTokenURI(string memory _baseTokenURI) external onlyOwner {
+    baseTokenURI = _baseTokenURI;
+    emit SetBaseTokenURI(_baseTokenURI);
+  }
+
+  /**
+   * @notice See {ERC721-_baseURI}
+   * @dev Override to return baseURI set by the owner
+   * @return string memory
+   */
+  function _baseURI() internal view override returns (string memory) {
+    return baseTokenURI;
   }
 
   /**

@@ -5,6 +5,7 @@ async function main() {
   const contract = await ethers.getContractFactory("SecureMintingNFT");
   const deployed = await contract.deploy();
   await deployed.deployed();
+  await deployed.setBaseTokenURI("http://example-token.io/")
   await deployed.setMintSigner("0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC")
   console.log("DEPLOYED CONTRACT ADDRESS: ", deployed.address);
 }

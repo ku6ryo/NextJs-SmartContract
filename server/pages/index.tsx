@@ -46,12 +46,15 @@ const Home: NextPage = () => {
         const res = await axios.get("/api/getTokenIdAndSign?address=" + account)
         const {
           tokenId,
+          decimalTokenId,
           signature,
         } = res.data
         const web3 = new Web3(window.ethereum)
         const contract = new web3.eth.Contract(Definition.abi as any, NEXT_PUBLIC_CONTRACT_ADDRESS)
+        console.log(contract)
         await contract.methods.mint(tokenId, signature).send({ from: account })
-        setMintMessage("Minted - token ID: " + tokenId)
+        const tokenUri = await contract.methods.tokenURI(tokenId).call({ from: account })
+        setMintMessage("Minted - token ID: " + tokenId + " / " + decimalTokenId + " / " + tokenUri)
       } catch (e) {
         console.error(e)
         setMintMessage("Mint failed")
